@@ -31,6 +31,10 @@ except:
 addnote_bottom_frame_x = 500
 
 def animation_show():
+    # Check if it is new or not then show th btn
+
+    #if type == 'New':
+    #    addnote_bottom_frame.configure()
     global addnote_bottom_frame_x
 
     if addnote_bottom_frame_x >= 0.5:
@@ -38,7 +42,6 @@ def animation_show():
         addnote_bottom_frame.place(x = addnote_bottom_frame_x, y = 75)
         window.after(10,animation_show)
 
-    print('show',addnote_bottom_frame_x)
 
 def animation_hide():
     global addnote_bottom_frame_x
@@ -47,16 +50,21 @@ def animation_hide():
         addnote_bottom_frame_x += (addnote_bottom_frame_x*0.2)
         addnote_bottom_frame.place(x = addnote_bottom_frame_x, y = 75)
         window.after(10,animation_hide)
-    print('hide',addnote_bottom_frame_x)
     
 
 #========== App Functions ==========
 def add_btn_cliked():
     print('Add button clicked')
+    notes_textbox.delete('0.0', 'end')
+    note_name_label.configure(text='Note 1')
     animation_show()
 
 def open_note(note_id):
     print(f'Open {note_id}')
+    note_name_label.configure(text=Note_Names[note_id])
+    notes_textbox.delete('0.0', 'end')
+    notes_textbox.insert('0.0', Notes[note_id])
+    animation_show()
 
 #========== Main - UI ==========
 #--- Set up ---
@@ -226,12 +234,12 @@ def mainUI():
                 def notes_component():
                     notes_btn_fg_color = "#F7F7F7"
                     for i in range(0, len(Notes)):
-                        text_btn = Note_Names[i]
+                        text_btn_id = i
                         notes_btn = CTkButton(notes_frame, width= 460, height= 67,
                                             fg_color= notes_btn_fg_color, bg_color=bg, hover_color="#EDEDED",
                                             border_width= 2, corner_radius= 10, border_color= "#F1F1F1",
-                                            text = text_btn, font=(font_family, 20, 'bold'), 
-                                            text_color= black_color, anchor = 'w', command= lambda x = text_btn: open_note(x))
+                                            text = Note_Names[text_btn_id], font=(font_family, 20, 'bold'), 
+                                            text_color= black_color, anchor = 'w', command= lambda x = text_btn_id: open_note(x))
                         notes_btn.grid(row = i, padx = (16,0), pady = (8,0))
 
                 # Notes Frame ==================
@@ -255,6 +263,7 @@ def mainUI():
             addnote_bottom_frame.place( x = 0 + addnote_bottom_frame_x, y = 75)
 
             def top_note():
+                global note_name_label
                 top_note_frame = CTkFrame(addnote_bottom_frame, width= 450, height=70, 
                                             fg_color=bg, bg_color=bg, corner_radius=0)
                 top_note_frame.place(x = 25, y = 0)
@@ -271,10 +280,11 @@ def mainUI():
                 back_btn.place(x = 6, y = 22)
 
             def textbox():
+                global notes_textbox
                 notes_textbox = CTkTextbox(addnote_bottom_frame, width= 450, height= 565,
                                         fg_color= '#FCFCFC', bg_color= bg, corner_radius=8,
                                         border_width= 1.5, border_color= '#B9B9B9',
-                                        font=(font_family, 20))
+                                        font=(font_family, 20), activate_scrollbars=False)
                 notes_textbox.place(x = 25, y = 71)
 
 
