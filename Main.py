@@ -1,4 +1,4 @@
-# Credits: https://www.youtube.com/watch?v=zHi__WfuQ0o
+# Credits: https://www.youtube.com/watch?v=zHi__WfuQ0o - Helped with the UI design 
 from customtkinter import*
 from os import*
 
@@ -333,20 +333,24 @@ def rebuild_ui(type):
                 print('Nothing found')
                 nothing_to_show_search()
             else: 
-                if zero_results_label is None:
+                if zero_results_label is not None:
                     zero_results_label_y = 100
                     zero_results_label.place_forget()
 
 
 def change():
     global change_name_entry, current_note_id
+
+    search_entry.delete(0, 'end')
+    rebuild_ui('delete')
+
     change_id = current_note_id
 
-    print(f"Chang {Note_Names[change_id]}")
+    print(f"Chang {Note_Names[current_note_id]}")
 
     change_name_entry = CTkEntry(top_note_frame, width=353, height=42,
                                  border_width= 1.5, border_color= '#B9B9B9', corner_radius=5,
-                                 fg_color= bg, bg_color= bg, placeholder_text= Note_Names[change_id],
+                                 fg_color= bg, bg_color= bg, placeholder_text= Note_Names[current_note_id],
                                  placeholder_text_color= black_color, font=(font_family,24))
     change_name_entry.place(x = 34, y = 14)
 
@@ -355,14 +359,14 @@ def change():
 
         if new_name.strip() != '':
             note_name_label.configure(text = new_name)
-            Note_Names[change_id] = new_name
+            Note_Names[current_note_id] = new_name
             change_name_entry.destroy()
 
-            Note_Buttons[change_id].configure(text = new_name)
+            Note_Buttons[current_note_id].configure(text = new_name)
 
     change_name_entry.bind("<Return>", enter_pressed)
 
-    print(f"Changed to {Note_Names[change_id]}")
+    print(f"Changed to {Note_Names[current_note_id]}")
 
 #========== Main - UI ==========
 
