@@ -11,7 +11,7 @@ A simple and modern desktop Notes application built with **Python** and **Custom
 ## ✨ Features
 
 - 📝 Create notes
-- 📂 Open and edit notes
+- 📂 Open and edit notes + Automatic saving system
 - 🔍 Search through notes
 - ✏️ Rename notes
 - 🗑️ Delete notes
@@ -36,35 +36,13 @@ The application is **functional**, but it is still under development.
 
 There are currently some known bugs and missing features.
 
-### ⚠️ Important limitation
+### Version 1.1
+## 💾 Added Save System 
 
-**Notes are not saved permanently yet.**
+Notes are automatically saved when the application is closed and loaded again when it starts.
 
-Any notes created during a session will be lost when the application is closed.
-
-This is temporary.
-
----
-
-## 🔜 Planned Updates
-
-The next versions will focus on making the application more complete and reliable.
-
-### 💾 Persistent Notes
-
-The main upcoming feature is automatic saving.
-
-Notes will be stored on the user's device so they can be restored when the application is opened again.
-
-Planned behavior:
+The app stores:
 
 ```text
-Write a note
-     ↓
-Auto-save
-     ↓
-Close the app
-     ↓
-Open the app again
-     ↓
-Notes are still there
+Notes.txt
+Note_Names.txt
