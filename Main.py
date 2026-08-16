@@ -1,4 +1,4 @@
-# Credits: https://www.youtube.com/watch?v=zHi__WfuQ0o - Helped with the UI design 
+# Credits: https://www.youtube.com/watch?v=zHi__WfuQ0o
 from customtkinter import*
 from os import*
 
@@ -38,6 +38,7 @@ note_open = False
 delete_warning_y_n = None
 
 change_name_entry = None
+current_note_id = None
 
 def animation_show():
     global addnote_bottom_frame_x, note_open
@@ -56,7 +57,7 @@ def animation_show():
         window.after(10,animation_show)
 
 def animation_hide(type): # This function also saves the note + animation 
-    global addnote_bottom_frame_x, change_name_entry
+    global addnote_bottom_frame_x, change_name_entry, current_note_id
 
     if change_name_entry is not None:
         change_name_entry.destroy()
@@ -70,8 +71,8 @@ def animation_hide(type): # This function also saves the note + animation
         window.after(10,lambda: animation_hide(type))
     elif type == 'back':
         try:
-            note_index = Note_Names.index(note_name_label.cget('text'))
-            Notes[note_index] = notes_textbox.get('0.0','end')
+            #note_index = Note_Names.index(note_name_label.cget('text'))
+            Notes[current_note_id] = notes_textbox.get('0.0','end')
         except:
             pass
 
@@ -187,18 +188,19 @@ def nothing_to_show_search():
 
     nothing_to_show_text = 'No results found'
 
-    if zero_results_label is None:
-        zero_results_label = CTkLabel(window, width = 200, height= 44,
-                                    fg_color= bg, bg_color=bg, font=(font_family, 15),
-                                    text_color='#8E8E8E', anchor= 'center',
-                                    text=nothing_to_show_text)
+    if  zero_results_label_y != 0:
+        if zero_results_label is None:
+            zero_results_label = CTkLabel(window, width = 200, height= 44,
+                                        fg_color= bg, bg_color=bg, font=(font_family, 15),
+                                        text_color='#8E8E8E', anchor= 'center',
+                                        text=nothing_to_show_text)
 
-   # zero_results_label_y = 100
-    
-    if zero_results_label_y > 0.5:
-        zero_results_label_y -= zero_results_label_y*0.1
-        zero_results_label.place(anchor = 'center', x = 250, y = zero_results_label_y+350)
-        window.after(10, lambda: nothing_to_show_search())
+    # zero_results_label_y = 100
+        
+        if zero_results_label_y > 0.5:
+            zero_results_label_y -= zero_results_label_y*0.1
+            zero_results_label.place(anchor = 'center', x = 250, y = zero_results_label_y+350)
+            window.after(10, lambda: nothing_to_show_search())
 
 def add_btn_cliked():
 
@@ -212,23 +214,7 @@ def add_btn_cliked():
         zero_results_label.place_forget()
 
     animation_show()
-
-    notes_btn = CTkButton(notes_frame, width= 460, height= 67,
-                          fg_color= notes_btn_fg_color, bg_color=bg, hover_color="#EDEDED",
-                          border_width= 2, corner_radius= 10, border_color= "#F1F1F1",
-                          text = Note_Names[-1], font=(font_family, 20, 'bold'), 
-                          text_color= black_color, anchor = 'w', 
-                          command= lambda x = (len(Note_Names))-1: open_note(x))
-
-    notes_btn.grid(row = len(Note_Names), padx = (16,0), pady = (8,0))
-
-    delete_btn = CTkButton(notes_btn, width=29, height=29,
-                            fg_color= notes_btn_fg_color, bg_color= '#EDEDED',
-                            hover_color= "#d7d7d7",
-                            border_width=0, corner_radius=4,
-                            text='', image=delete_light_icon_image, 
-                            command= lambda x = len(Note_Names)-1: delete(x))
-    delete_btn.place(x = 423, y = 21)
+    rebuild_ui('delete')
 
     Note_Buttons.append(notes_btn)
 
@@ -247,12 +233,14 @@ def delete(d_id):
 
     delete_warning(d_id)
 
-def rebuild_ui(type):
+def rebuild_ui(type): 
     global zero_notes_label_y, zero_results_label, change_name_entry, zero_notes_label, zero_results_label_y
 
-    change_name_entry = None
-
     if type == 'delete':
+        if change_name_entry != None:
+            change_name_entry.destroy()
+            change_name_entry = None # Debuged with GPT
+
         if zero_results_label != None:
             zero_results_label.destroy()
             zero_results_label = None
@@ -296,6 +284,10 @@ def rebuild_ui(type):
                 Note_Buttons.append(notes_btn)
     
     elif type == 'search':
+        if change_name_entry != None:
+            change_name_entry.destroy()
+            change_name_entry = None
+
         if len(Notes) != 0:
             Note_Buttons.clear()
 
@@ -330,43 +322,49 @@ def rebuild_ui(type):
 
                     Note_Buttons.append(notes_btn)
             if not found_any:
-                print('Nothing found')
+                #print('Nothing found')
                 nothing_to_show_search()
             else: 
                 if zero_results_label is not None:
                     zero_results_label_y = 100
                     zero_results_label.place_forget()
 
-
 def change():
     global change_name_entry, current_note_id
 
-    search_entry.delete(0, 'end')
-    rebuild_ui('delete')
-
     change_id = current_note_id
 
-    print(f"Chang {Note_Names[current_note_id]}")
+    if change_id is None:
+        #print('Error: No note is open') --- Debug
+        return
+
+    search_entry.delete(0, 'end')
+
+    #print(f"Chang {Note_Names[change_id]}")
 
     change_name_entry = CTkEntry(top_note_frame, width=353, height=42,
                                  border_width= 1.5, border_color= '#B9B9B9', corner_radius=5,
-                                 fg_color= bg, bg_color= bg, placeholder_text= Note_Names[current_note_id],
+                                 fg_color= bg, bg_color= bg, placeholder_text= Note_Names[change_id],
                                  placeholder_text_color= black_color, font=(font_family,24))
     change_name_entry.place(x = 34, y = 14)
 
     def enter_pressed(idk): # The "idk" prevents the app from crashing :) *Explanation - Copilot: Tkinter always passes an event object to any function bound with .bind().*
+        global change_name_entry
         new_name = change_name_entry.get()
 
         if new_name.strip() != '':
+            Note_Names[change_id] = new_name
             note_name_label.configure(text = new_name)
-            Note_Names[current_note_id] = new_name
-            change_name_entry.destroy()
 
-            Note_Buttons[current_note_id].configure(text = new_name)
+            change_name_entry.destroy()
+            change_name_entry = None
+
+            search_entry.delete(0,'end')
+            rebuild_ui('delete')
+
+        #print(f"Changed to {Note_Names[change_id]}")  --- Debug
 
     change_name_entry.bind("<Return>", enter_pressed)
-
-    print(f"Changed to {Note_Names[current_note_id]}")
 
 #========== Main - UI ==========
 
