@@ -4,7 +4,9 @@ from os import*
 
 from ImportAssets import* # This helps us to open the app after the assets are ready
 from WeekCalendar import*
-from Notes import*
+from ImportNotes import*
+
+Notes, Note_Names = load_notes()
 
 window = CTk()
 
@@ -330,12 +332,12 @@ def rebuild_ui(type):
                     zero_results_label.place_forget()
 
 def change():
-    global change_name_entry, current_note_id
+    global change_name_entry, current_note_id, change_id
 
     change_id = current_note_id
 
     if change_id is None:
-        #print('Error: No note is open') --- Debug
+        print('ERROR: Cannot rename — no note is currently open.')
         return
 
     search_entry.delete(0, 'end')
@@ -638,4 +640,9 @@ mainUI()
 search_entry.bind('<KeyRelease>', search) # Debuged with GPT
 search_entry.bind('<FocusIn>', clear_search_entry)
 
+def close():
+    save_notes(Notes, Note_Names)
+    window.destroy()
+
+window.protocol("WM_DELETE_WINDOW", close)
 window.mainloop()
